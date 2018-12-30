@@ -7,16 +7,22 @@ class Game {
         Game();
         void start();
     private:
-        class Location;
-        class Player;
+        struct Location;
+        struct Player;
+        struct Object;
+        struct Exit;
         std::vector<Location> locations;
         Player player;
 };
 
-class Game::Location {
-
+struct Game::Location {
+    std::string name;
+    std::string description;
+    std::vector<Object> objects;
+    std::vector<Exit> exits;
 };
 
-class Game::Player {
-
+struct Game::Player {
+    std::string name;
+    Location *location;
 };
