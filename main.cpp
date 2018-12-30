@@ -28,10 +28,15 @@ Game::Game() {
     object.name = "computer";
     object.description = "It looks like it's using Debian GNU/Linux.";
     location.objects.push_back(object);
+    locations.push_back(location);
+    player.location = *locations[0];
 }
 
 void Game::start() {
-    // ...
+    while (1) {
+        player.location->describe();
+        takeInput();
+    }
 }
 
 struct Game::Location {
@@ -39,7 +44,13 @@ struct Game::Location {
     std::string description;
     std::vector<Object> objects;
     std::vector<Exit> exits;
+    void describe();
 };
+
+void Game::Location::describe() {
+    std::cout << "You are in " << name << ".\n" << description << "\n" << "You can see ";
+    
+}
 
 // Here was Player
 
