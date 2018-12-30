@@ -11,6 +11,7 @@ class Game {
         struct Player;
         struct Object;
         struct Exit;
+        enum DIRECTION;
         std::vector<Location> locations;
         Player player;
 };
@@ -33,5 +34,8 @@ struct Game::Object {
 };
 
 struct Game::Exit {
-
+    DIRECTION direction;
+    Location *location;
 };
+
+enum Game::DIRECTION {N, E, S, W};
