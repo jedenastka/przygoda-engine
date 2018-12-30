@@ -8,7 +8,10 @@ class Game {
         void start();
     private:
         struct Location;
-        struct Player;
+        struct Player {
+            std::string name;
+            Location *location;
+        };
         struct Object;
         struct Exit;
         enum class DIRECTION;
@@ -17,11 +20,11 @@ class Game {
 };
 
 Game::Game() {
-    //FNI
+    // ...
 }
 
-void Game::start {
-    ///FNI
+void Game::start() {
+    // ...
 }
 
 struct Game::Location {
@@ -31,10 +34,7 @@ struct Game::Location {
     std::vector<Exit> exits;
 };
 
-struct Game::Player {
-    std::string name;
-    Location *location;
-};
+// Here was Player
 
 struct Game::Object {
     std::string name;
