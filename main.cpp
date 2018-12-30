@@ -26,3 +26,12 @@ struct Game::Player {
     std::string name;
     Location *location;
 };
+
+struct Game::Object {
+    std::string name;
+    std::string description;
+};
+
+struct Game::Exit {
+
+};
