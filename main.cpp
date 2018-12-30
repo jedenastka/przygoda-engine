@@ -16,6 +16,14 @@ class Game {
         Player player;
 };
 
+Game::Game() {
+    //FNI
+}
+
+void Game::start {
+    ///FNI
+}
+
 struct Game::Location {
     std::string name;
     std::string description;
@@ -39,3 +47,8 @@ struct Game::Exit {
 };
 
 enum Game::DIRECTION {N, E, S, W};
+
+int main() {
+    Game game;
+    game.start();
+}
