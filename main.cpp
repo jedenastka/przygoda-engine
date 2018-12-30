@@ -20,7 +20,14 @@ class Game {
 };
 
 Game::Game() {
-    // ...
+    player.name = "player";
+    Location location;
+    location.name = "room";
+    location.description = "It seems small and smells bad.";
+    Object object;
+    object.name = "computer";
+    object.description = "It looks like it's using Debian GNU/Linux.";
+    location.objects.push_back(object);
 }
 
 void Game::start() {
