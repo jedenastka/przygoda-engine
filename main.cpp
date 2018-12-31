@@ -7,11 +7,13 @@ class Game {
         Game();
         void start();
     private:
-        
-        class Location;
-        class Player;
-        class Object;
-        class Exit;
+        struct Location;
+        struct Player {
+            std::string name;
+            Location *location;
+        };
+        struct Object;
+        struct Exit;
         enum class DIRECTION;
         std::vector<Location> locations;
         Player player;
@@ -33,47 +35,33 @@ Game::Game() {
 void Game::start() {
     while (1) {
         player.location->describe();
-        //takeInput();
+        takeInput();
     }
 }
 
-class Game::Location {
-    public:
-        std::string name;
-        std::string description;
-        std::vector<Object> objects;
-        std::vector<Exit> exits;
-        void describe();
+struct Game::Location {
+    std::string name;
+    std::string description;
+    std::vector<Object> objects;
+    std::vector<Exit> exits;
+    void describe();
 };
 
 void Game::Location::describe() {
     std::cout << "You are in " << name << ".\n" << description << "\n" << "You can see ";
-    for (auto i : objects) {
-        std::cout << i.name << " ";
-    }
-    std::cout << ".\n" << "You can go ";
-    for (auto i : objects) {
-        std::cout << i.direction << " ";
-    }
-    std::cout << ".\n";
+    
 }
 
-class Game::Player {
-    public:
-        std::string name;
-        Location *location;
+// Here was Player
+
+struct Game::Object {
+    std::string name;
+    std::string description;
 };
 
-class Game::Object {
-    public:
-        std::string name;
-        std::string description;
-};
-
-class Game::Exit {
-    public:
-        DIRECTION direction;
-        Location *location;
+struct Game::Exit {
+    DIRECTION direction;
+    Location *location;
 };
 
 enum class Game::DIRECTION {N, E, S, W};
