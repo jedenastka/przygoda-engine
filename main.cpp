@@ -7,21 +7,67 @@ class Game {
         Game();
         void start();
     private:
-        struct Location;
+        enum class DIRECTION {N, E, S, W};
+
+        struct Object {
+            std::string name;
+            std::string description;
+        };
+
+        struct Exit {
+            DIRECTION direction;
+            int locationID;
+            std::string str();
+        };
+
         struct Player {
             std::string name;
-            Location *location;
+            int locationID;
         };
-        struct Object;
-        struct Exit;
-        enum class DIRECTION;
+
+        struct Location {
+            int ID;
+            std::string name;
+            std::string description;
+            std::vector<Object> objects;
+            std::vector<Exit> exits;
+            void describe();
+        };
+
+        Location findLocation(int ID);
         std::vector<Location> locations;
         Player player;
 };
 
+std::string Game::Exit::str() {
+    switch (direction) {
+        case N:
+            return "north";
+        case E:
+            return "east";
+        case S:
+            return "south";
+        case W:
+            return "west";
+    }
+}
+
+void Game::Location::describe() {
+    std::cout << "You are in " << name << ".\n" << description << "\n" << "You can see ";
+    for (auto i: objects) {
+        std::cout << i.name << " ";
+    }
+    std::cout << ".\n" << "You can go ";
+    for (auto i: exits) {
+        std::cout << i.str() << " ";
+    }
+    std::cout << ".\n";
+}
+
 Game::Game() {
     player.name = "player";
     Location location;
+    location.ID = 0;
     location.name = "room";
     location.description = "It seems small and smells bad.";
     Object object;
@@ -29,42 +75,24 @@ Game::Game() {
     object.description = "It looks like it's using Debian GNU/Linux.";
     location.objects.push_back(object);
     locations.push_back(location);
-    player.location = *locations[0];
+    player.locationID = 0;
+}
+
+Game::Location Game::findLocation(int ID) {
+    for (auto i: locations) {
+        if (i.ID == ID) {
+            return i;
+        }
+    }
+    throw "Location not found.";
 }
 
 void Game::start() {
     while (1) {
-        player.location->describe();
-        takeInput();
+        findLocation(player.locationID).describe();
+        //takeInput();
     }
 }
-
-struct Game::Location {
-    std::string name;
-    std::string description;
-    std::vector<Object> objects;
-    std::vector<Exit> exits;
-    void describe();
-};
-
-void Game::Location::describe() {
-    std::cout << "You are in " << name << ".\n" << description << "\n" << "You can see ";
-    
-}
-
-// Here was Player
-
-struct Game::Object {
-    std::string name;
-    std::string description;
-};
-
-struct Game::Exit {
-    DIRECTION direction;
-    Location *location;
-};
-
-enum class Game::DIRECTION {N, E, S, W};
 
 int main() {
     Game game;
