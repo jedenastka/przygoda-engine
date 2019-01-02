@@ -2,13 +2,13 @@
 #include <string>
 #include <vector>
 
+enum DIRECTION {N, E, S, W};
+
 class Game {
     public:
         Game();
         void start();
     private:
-        enum class DIRECTION {N, E, S, W};
-
         struct Object {
             std::string name;
             std::string description;
@@ -34,6 +34,7 @@ class Game {
             void describe();
         };
 
+        void takeInput();
         Location findLocation(int ID);
         std::vector<Location> locations;
         Player player;
@@ -78,6 +79,12 @@ Game::Game() {
     player.locationID = 0;
 }
 
+void Game::takeInput() {
+    std::string input;
+    std::cout << "> ";
+    getline(std::cin, input);
+}
+
 Game::Location Game::findLocation(int ID) {
     for (auto i: locations) {
         if (i.ID == ID) {
@@ -90,7 +97,7 @@ Game::Location Game::findLocation(int ID) {
 void Game::start() {
     while (1) {
         findLocation(player.locationID).describe();
-        //takeInput();
+        takeInput();
     }
 }
 
