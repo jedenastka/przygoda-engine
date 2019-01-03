@@ -20,11 +20,6 @@ class Game {
             std::string str();
         };
 
-        struct Player {
-            std::string name;
-            int locationID;
-        };
-
         struct Location {
             int ID;
             std::string name;
@@ -34,9 +29,15 @@ class Game {
             void describe();
         };
 
+        struct Player {
+            std::string name;
+            int locationID;
+            void go(std::string directionStr);
+        };
+
         void takeInput();
-        Location findLocation(int ID);
-        std::vector<Location> locations;
+        static Location findLocation(int ID);
+        static std::vector<Location> locations;
         Player player;
 };
 
@@ -75,6 +76,17 @@ Game::Game() {
     object.name = "computer";
     object.description = "It looks like it's using Debian GNU/Linux.";
     location.objects.push_back(object);
+    Exit exit;
+    exit.direction = W;
+    exit.locationID = 1;
+    location.exits.push_back(exit);
+    locations.push_back(location);
+    location.ID = 1;
+    location.name = "libray";
+    location.description = "You can see books everywhere. It's quite abbadoned.";
+    exit.direction = E;
+    exit.locationID = 0;
+    location.exits.push_back(exit);
     locations.push_back(location);
     player.locationID = 0;
 }
@@ -83,6 +95,39 @@ void Game::takeInput() {
     std::string input;
     std::cout << "> ";
     getline(std::cin, input);
+    std::vector<std::string> data;
+    std::string actualString;
+    for (int i = 0; i <= input.size(); i++) {
+        if (input[i] == ' ' || i == input.size()) {
+            data.push_back(actualString);
+            actualString = "";
+            continue;
+        }
+        actualString += input[i];
+    }
+    if (data[0] == "go") {
+        player.go(data[1]);
+    }
+}
+
+void Game::Player::go(std::string directionStr) {
+    DIRECTION direction;
+    if (directionStr == "north") {
+        direction = N;
+    } else if (directionStr == "east") {
+        direction = E;
+    } else if (directionStr == "south") {
+        direction = S;
+    } else if (directionStr == "west") {
+        direction = W;
+    }
+    for (auto i: findLocation(locationID).exits) {
+        if (i.direction == direction) {
+            locationID = i.locationID;
+            return;
+        }
+    }
+    std::cout << "You can't go there!\n";
 }
 
 Game::Location Game::findLocation(int ID) {
