@@ -33,6 +33,7 @@ class Game {
             std::string name;
             int locationID;
             void go(std::string directionStr);
+            void lookAt(std::string objectStr);
         };
 
         void takeInput();
@@ -121,8 +122,11 @@ void Game::takeInput() {
         }
         actualString += input[i];
     }
-    if (data[0] == "go") {
+    std::string commandStr = data[0];
+    if (commandStr == "go") {
         player.go(data[1]);
+    } else if (commandStr == "lookat") {
+        player.lookAt(data[1]);
     } else {
         std::cout << "Hmm?\n";
     }
@@ -148,6 +152,17 @@ void Game::Player::go(std::string directionStr) {
         }
     }
     std::cout << "You can't go there!\n";
+}
+
+
+void Game::Player::lookAt(std::string objectStr) {
+    for (auto i: findLocation(locationID).objects) {
+        if (i.name == objectStr) {
+            std::cout << i.description << "\n";
+            return;
+        }
+    }
+    std::cout << "Nothing like that here.\n";
 }
 
 Game::Location Game::findLocation(int ID) {
