@@ -108,6 +108,8 @@ void Game::takeInput() {
     }
     if (data[0] == "go") {
         player.go(data[1]);
+    } else {
+        std::cout << "Hmm?\n";
     }
 }
 
