@@ -148,6 +148,7 @@ void Game::Player::go(std::string directionStr) {
     for (auto i: findLocation(locationID).exits) {
         if (i.direction == direction) {
             locationID = i.locationID;
+            findLocation(locationID).describe();
             return;
         }
     }
@@ -175,8 +176,8 @@ Game::Location Game::findLocation(int ID) {
 }
 
 void Game::start() {
+    findLocation(player.locationID).describe();
     while (1) {
-        findLocation(player.locationID).describe();
         takeInput();
     }
 }
