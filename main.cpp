@@ -81,13 +81,14 @@ Game::Game() {
     exit.locationID = 1;
     location.exits.push_back(exit);
     locations.push_back(location);
-    location.ID = 1;
-    location.name = "libray";
-    location.description = "You can see books everywhere. It's quite abbadoned.";
+    Location location2;
+    location2.ID = 1;
+    location2.name = "libray";
+    location2.description = "You can see books everywhere. It's quite abbadoned.";
     exit.direction = E;
     exit.locationID = 0;
-    location.exits.push_back(exit);
-    locations.push_back(location);
+    location2.exits.push_back(exit);
+    locations.push_back(location2);
     player.locationID = 0;
 }
 
@@ -109,6 +110,8 @@ void Game::takeInput() {
         player.go(data[1]);
     }
 }
+
+std::vector<Game::Location> Game::locations;
 
 void Game::Player::go(std::string directionStr) {
     DIRECTION direction;
