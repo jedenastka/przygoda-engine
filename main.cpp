@@ -80,7 +80,10 @@ Game::Game() {
     location.description = "It seems small and smells bad.";
     Object object;
     object.name = "computer";
-    object.description = "It looks like it's using Debian GNU/Linux.";
+    object.description = "It looks very old. You can see Pentium II badge on the case.";
+    location.objects.push_back(object);
+    object.name = "piece of paper";
+    object.description = "Lots of text on it. \"Dear you\"... And, the text dissapears.";
     location.objects.push_back(object);
     Exit exit;
     exit.direction = W;
@@ -91,6 +94,12 @@ Game::Game() {
     location2.ID = 1;
     location2.name = "libray";
     location2.description = "You can see books everywhere. It's quite abbadoned.";
+    object.name = "web";
+    object.description = "Oh, a spider!";
+    location2.objects.push_back(object);
+    object.name = "\"Lord of Rings\"";
+    object.description = "T. R. R. Folkien wrote this. You think his name was quite different...";
+    location2.objects.push_back(object);
     exit.direction = E;
     exit.locationID = 0;
     location2.exits.push_back(exit);
