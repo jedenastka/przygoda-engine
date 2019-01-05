@@ -56,12 +56,18 @@ std::string Game::Exit::str() {
 
 void Game::Location::describe() {
     std::cout << "You are in " << name << ".\n" << description << "\n" << "You can see ";
-    for (auto i: objects) {
-        std::cout << i.name << " ";
+    for (std::vector<Object>::iterator itr = objects.begin(); itr != objects.end(); ++itr) {
+        std::cout << itr->name;
+        if (itr+1 != objects.end()) {
+            std::cout << ", ";
+        }
     }
     std::cout << ".\n" << "You can go ";
-    for (auto i: exits) {
-        std::cout << i.str() << " ";
+    for (std::vector<Exit>::iterator itr = exits.begin(); itr != exits.end(); ++itr) {
+        std::cout << itr->str();
+        if (itr+1 != exits.end()) {
+            std::cout << ", ";
+        }
     }
     std::cout << ".\n";
 }
