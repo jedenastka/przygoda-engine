@@ -238,6 +238,8 @@ int main() {
             }
         } else if (command == "exit" && args.size() == 0) {
             end = 1;
+        } else if (command == "describe" && args.size() == 0) {
+            player.getRoom()->describe();
         } else {
             std::cout << "Invalid command.\n";
         }
