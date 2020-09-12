@@ -107,7 +107,7 @@ bool Room::getExit(Direction direction, Exit &exit) {
 class Player {
 
     public:
-        Player(Room*);
+        Player() {}
 
         Room *getRoom();
         void moveTo(Room*);
@@ -118,16 +118,13 @@ class Player {
     
 };
 
-Player::Player(Room *room) {
-    this->room = room;
-}
-
 Room *Player::getRoom() {
     return room;
 }
 
 void Player::moveTo(Room *room) {
     this->room = room;
+    this->room->describe();
 }
 
 bool Player::moveDirection(Direction direction) {
@@ -217,13 +214,12 @@ int main() {
         rooms[room["id"]] = Room(room["description"], exits);
     }
 
-    Player player(&rooms[game["player"]["room"]]);
+    Player player;
+    player.moveTo(&rooms[game["player"]["room"]]);
 
     bool end = 0;
     while (!end) {
-        player.getRoom()->describe();
-
-        std::cout << "\n? ";
+        std::cout << "? ";
         std::string commandString;
         getline(std::cin, commandString);
 
