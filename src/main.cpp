@@ -209,14 +209,19 @@ int main() {
         player.getRoom()->describe();
 
         std::cout << "\n? ";
-        std::string command;
-        getline(std::cin, command);
+        std::string commandString;
+        getline(std::cin, commandString);
 
-        std::vector<std::string> splitCommand = splitString(command);
-        if (splitCommand[0] == "go") {
-            player.moveTo(player.getRoom()->getExit(stringToDirection(splitCommand[1])).getRoom());
-        } else if (splitCommand[0] == "exit") {
+        std::vector<std::string> args = splitString(commandString);
+        std::string command = args[0];
+        args.erase(args.begin());
+
+        if (command == "go" && args.size() == 1) {
+            player.moveTo(player.getRoom()->getExit(stringToDirection(args[0])).getRoom());
+        } else if (command == "exit" && args.size() == 0) {
             end = 1;
+        } else {
+            std::cout << "Invalid command.\n";
         }
     }
 }
