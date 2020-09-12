@@ -76,19 +76,21 @@ Room::Room(std::string description, std::map<Direction, Exit> exits) {
 }
 
 void Room::describe() {
-    std::cout << description << "\n\n";
-    std::cout << "You can go ";
-    for (auto itr = exits.begin(); itr != exits.end(); ++itr) {
-        if (itr != exits.begin()) {
-            if (std::next(itr) == exits.end()) {
-                std::cout << " and ";
-            } else {
-                std::cout << ", ";
+    std::cout << description << "\n";
+    if (exits.size() > 0) {
+        std::cout << "\nYou can go ";
+        for (auto itr = exits.begin(); itr != exits.end(); ++itr) {
+            if (itr != exits.begin()) {
+                if (std::next(itr) == exits.end()) {
+                    std::cout << " and ";
+                } else {
+                    std::cout << ", ";
+                }
             }
+            std::cout << directionToString(itr->first);
         }
-        std::cout << directionToString(itr->first);
+        std::cout << ".\n";
     }
-    std::cout << ".\n";
 }
 
 Exit Room::getExit(Direction direction) {
