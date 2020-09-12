@@ -109,6 +109,7 @@ class Player {
 
         Room *getRoom();
         void moveTo(Room*);
+        void moveDirection(Direction);
     
     private:
         Room *room;
@@ -125,6 +126,10 @@ Room *Player::getRoom() {
 
 void Player::moveTo(Room *room) {
     this->room = room;
+}
+
+void Player::moveDirection(Direction direction) {
+    moveTo(getRoom()->getExit(direction).getRoom());
 }
 
 
@@ -219,7 +224,7 @@ int main() {
         args.erase(args.begin());
 
         if (command == "go" && args.size() == 1) {
-            player.moveTo(player.getRoom()->getExit(stringToDirection(args[0])).getRoom());
+            player.moveDirection(stringToDirection(args[0]));
         } else if (command == "exit" && args.size() == 0) {
             end = 1;
         } else {
