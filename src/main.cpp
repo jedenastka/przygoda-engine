@@ -17,6 +17,7 @@ std::string directionToString(Direction);
 
 
 enum class Direction {
+    None,
     North,
     South,
     East,
@@ -62,7 +63,7 @@ class Room {
         Room(std::string, std::map<Direction, Exit>);
 
         void describe();
-        Exit getExit(Direction);
+        bool getExit(Direction, Exit&);
     
     private:
         std::string description;
@@ -93,11 +94,12 @@ void Room::describe() {
     }
 }
 
-Exit Room::getExit(Direction direction) {
+bool Room::getExit(Direction direction, Exit &exit) {
     if (exits.find(direction) != exits.end()) {
-        return exits[direction];
+        exit = exits[direction];
+        return 1;
     } else {
-        throw;
+        return 0;
     }
 }
 
@@ -109,7 +111,7 @@ class Player {
 
         Room *getRoom();
         void moveTo(Room*);
-        void moveDirection(Direction);
+        bool moveDirection(Direction);
     
     private:
         Room *room;
@@ -128,8 +130,14 @@ void Player::moveTo(Room *room) {
     this->room = room;
 }
 
-void Player::moveDirection(Direction direction) {
-    moveTo(getRoom()->getExit(direction).getRoom());
+bool Player::moveDirection(Direction direction) {
+    Exit exit;
+    if (room->getExit(direction, exit)) {
+        moveTo(exit.getRoom());
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 
@@ -175,7 +183,7 @@ Direction stringToDirection(std::string string) {
     } else if (string == "down" || string == "d") {
         return Direction::Down;
     } else {
-        throw;
+        return Direction::None;
     }
 }
 
@@ -224,7 +232,14 @@ int main() {
         args.erase(args.begin());
 
         if (command == "go" && args.size() == 1) {
-            player.moveDirection(stringToDirection(args[0]));
+            Direction direction = stringToDirection(args[0]);
+            if (direction != Direction::None) {
+                if (!player.moveDirection(direction)) {
+                    std::cout << "Can't go " << directionToString(direction) << ".\n";
+                }
+            } else {
+                std::cout << "There is no direction '" << args[0] << "'.\n";
+            }
         } else if (command == "exit" && args.size() == 0) {
             end = 1;
         } else {
