@@ -215,6 +215,8 @@ int main() {
         std::vector<std::string> splitCommand = splitString(command);
         if (splitCommand[0] == "go") {
             player.moveTo(player.getRoom()->getExit(stringToDirection(splitCommand[1])).getRoom());
+        } else if (splitCommand[0] == "exit") {
+            end = 1;
         }
     }
 }
