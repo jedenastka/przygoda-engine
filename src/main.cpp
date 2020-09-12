@@ -155,21 +155,36 @@ std::string directionToString(Direction direction) {
 }
 
 Direction stringToDirection(std::string string) {
-    if (string == "north") {
+    if (string == "north" || string == "n") {
         return Direction::North;
-    } else if (string == "south") {
+    } else if (string == "south" || string == "s") {
         return Direction::South;
-    } else if (string == "east") {
+    } else if (string == "east" || string == "e") {
         return Direction::East;
-    } else if (string == "west") {
+    } else if (string == "west" || string == "w") {
         return Direction::West;
-    } else if (string == "up") {
+    } else if (string == "up" || string == "u") {
         return Direction::Up;
-    } else if (string == "down") {
+    } else if (string == "down" || string == "d") {
         return Direction::Down;
     } else {
         throw;
     }
+}
+
+std::vector<std::string> splitString(std::string string, char delimeter = ' ') {
+    std::vector<std::string> ret;
+    std::string temp;
+    for (char ch: string) {
+        if (ch == delimeter) {
+            ret.push_back(temp);
+            temp = "";
+        } else {
+            temp += ch;
+        }
+    }
+    ret.push_back(temp);
+    return ret;
 }
 
 int main() {
@@ -196,5 +211,10 @@ int main() {
         std::cout << "\n? ";
         std::string command;
         getline(std::cin, command);
+
+        std::vector<std::string> splitCommand = splitString(command);
+        if (splitCommand[0] == "go") {
+            player.moveTo(player.getRoom()->getExit(stringToDirection(splitCommand[1])).getRoom());
+        }
     }
 }
