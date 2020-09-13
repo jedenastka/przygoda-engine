@@ -56,6 +56,47 @@ bool Exit::isHidden() {
 }
 
 
+class Item {
+    
+    public:
+        enum Property {
+            Name,
+            Description
+        };
+
+        Item(std::string, std::string, std::string);
+
+        std::string getProperty(Property);
+        std::string getId();
+
+        static void addItem(std::string, std::map<Property, std::string>);
+    
+    private:
+        std::string id;
+
+        static std::map<std::string, std::map<Property, std::string>> itemProperties;
+    
+};
+
+std::map<std::string, std::map<Item::Property, std::string>> Item::itemProperties;
+
+Item::Item(std::string id, std::string name, std::string description) {
+    this->id = id;
+}
+
+std::string Item::getId() {
+    return id;
+}
+
+std::string Item::getProperty(Property property) {
+    return itemProperties[id][property];
+}
+
+void Item::addItem(std::string id, std::map<Property, std::string> properties) {
+    itemProperties[id] = properties;
+}
+
+
 class Room {
 
     public:
