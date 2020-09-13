@@ -64,7 +64,7 @@ class Item {
             Description
         };
 
-        Item(std::string, std::string, std::string);
+        Item(std::string);
 
         std::string getProperty(Property);
         std::string getId();
@@ -80,7 +80,7 @@ class Item {
 
 std::map<std::string, std::map<Item::Property, std::string>> Item::itemProperties;
 
-Item::Item(std::string id, std::string name, std::string description) {
+Item::Item(std::string id) {
     this->id = id;
 }
 
@@ -101,7 +101,7 @@ class Room {
 
     public:
         Room() {}
-        Room(std::string, std::map<Direction, Exit>);
+        Room(std::string, std::map<Direction, Exit>, std::vector<Item>);
 
         void describe();
         bool getExit(Direction, Exit&);
@@ -109,12 +109,14 @@ class Room {
     private:
         std::string description;
         std::map<Direction, Exit> exits;
+        std::vector<Item> items;
 
 };
 
-Room::Room(std::string description, std::map<Direction, Exit> exits) {
+Room::Room(std::string description, std::map<Direction, Exit> exits, std::vector<Item> items) {
     this->description = description;
     this->exits = exits;
+    this->items = items;
 }
 
 void Room::describe() {
@@ -244,6 +246,13 @@ int main() {
     nlohmann::json game;
     std::ifstream gameFile("game.json");
     gameFile >> game;
+
+    for (auto item: game["items"].items()) {
+        std::map<Item::Property, std::string> properties;
+        properties[Item::Name] = item.value()["name"];
+        properties[Item::Description] = item.value()["description"];
+        Item::addItem(item.key(), properties);
+    }
     
     std::map<int, Room> rooms;
     for (nlohmann::json room: game["rooms"]) {
@@ -252,7 +261,13 @@ int main() {
             // There could be a problem with 'target' being a pointer, if the room it points to isn't yet in 'exits' map.
             exits[stringToDirection(exit.key())] = Exit(&rooms[exit.value()["target"]], exit.value()["hidden"]);
         }
-        rooms[room["id"]] = Room(room["description"], exits);
+
+        std::vector<Item> items;
+        for (nlohmann::json item: room["items"]) {
+            items.push_back(Item(item));
+        }
+
+        rooms[room["id"]] = Room(room["description"], exits, items);
     }
 
     Player player;
