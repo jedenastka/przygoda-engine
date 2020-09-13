@@ -16,6 +16,7 @@ std::string directionToString(Direction);
 
 
 
+// TODO: Should be a class. See below.
 enum class Direction {
     None,
     North,
@@ -121,6 +122,8 @@ Room::Room(std::string description, std::map<Direction, Exit> exits, std::vector
 
 void Room::describe() {
     std::cout << description << "\n";
+
+    // TODO: Doesn't take 'hidden' property into account.
     if (exits.size() > 0) {
         std::cout << "\nYou can go ";
         for (auto itr = exits.begin(); itr != exits.end(); ++itr) {
@@ -132,6 +135,23 @@ void Room::describe() {
                 }
             }
             std::cout << directionToString(itr->first);
+        }
+        std::cout << ".\n";
+    }
+
+    // TODO: There is no 'hidden' property for items, but it won't take it into account anyways.
+    if (items.size() > 0) {
+        std::cout << "\nYou can see ";
+        // TODO: Copy-pasted code. Move that into a function... if possible.
+        for (auto itr = items.begin(); itr != items.end(); ++itr) {
+            if (itr != items.begin()) {
+                if (std::next(itr) == items.end()) {
+                    std::cout << " and ";
+                } else {
+                    std::cout << ", ";
+                }
+            }
+            std::cout << itr->getProperty(Item::Name);
         }
         std::cout << ".\n";
     }
@@ -182,6 +202,7 @@ bool Player::moveDirection(Direction direction) {
 
 
 
+// TODO: Make a Direction class and move this there.
 std::string directionToString(Direction direction) {
     switch (direction) {
         
@@ -209,6 +230,7 @@ std::string directionToString(Direction direction) {
     }
 }
 
+// TODO: This too. As a static member.
 Direction stringToDirection(std::string string) {
     if (string == "north" || string == "n") {
         return Direction::North;
