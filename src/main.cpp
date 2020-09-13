@@ -64,7 +64,8 @@ class Item {
             Name,
             Description
         };
-
+        
+        //Item() {}
         Item(std::string);
 
         std::string getProperty(Property);
@@ -106,6 +107,7 @@ class Room {
 
         void describe();
         bool getExit(Direction, Exit&);
+        std::vector<Item> getItems();
     
     private:
         std::string description;
@@ -139,7 +141,7 @@ void Room::describe() {
         std::cout << ".\n";
     }
 
-    // TODO: There is no 'hidden' property for items, but it won't take it into account anyways.
+    // TODO: There is no 'hidden' property for items (yet), but it won't take it into account anyways.
     if (items.size() > 0) {
         std::cout << "\nYou can see ";
         // TODO: Copy-pasted code. Move that into a function... if possible.
@@ -164,6 +166,10 @@ bool Room::getExit(Direction direction, Exit &exit) {
     } else {
         return 0;
     }
+}
+
+std::vector<Item> Room::getItems() {
+    return items;
 }
 
 
@@ -318,6 +324,19 @@ int main() {
             end = 1;
         } else if (command == "describe" && args.size() == 0) {
             player.getRoom()->describe();
+        } else if (command == "examine" && args.size() == 1) {
+            bool found = 0;
+            for (Item item: player.getRoom()->getItems()) {
+                if (item.getProperty(Item::Name) == args[0]) {
+                    std::cout << item.getProperty(Item::Description) << '\n';
+                    found = 1;
+                    break;
+                }
+            }
+
+            if (!found) {
+                std::cout << "There is no item '" << args[0] << "'.\n";
+            }
         } else {
             std::cout << "Invalid command.\n";
         }
