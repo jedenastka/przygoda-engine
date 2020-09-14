@@ -238,12 +238,12 @@ void Room::describe() {
 
     // TODO: Doesn't take 'hidden' property into account.
     if (exits.size() > 0) {
-        std::cout << "\nYou can go " << enumerateItems(exits.begin(), exits.end(), [](auto itr) -> std::string { return itr->first.str(); }) << ".\n";
+        std::cout << "\nYou can go " << enumerateItems(exits.begin(), exits.end(), [](auto itr) { return itr->first.str(); }) << ".\n";
     }
 
     // TODO: There is no 'hidden' property for items (yet), but it won't take it into account anyways.
     if (items.size() > 0) {
-        std::cout << "\nYou can see " << enumerateItems(items.begin(), items.end(), [](auto itr) -> std::string { return itr->getProperty(Item::Name); }) << ".\n";
+        std::cout << "\nYou can see " << enumerateItems(items.begin(), items.end(), [](auto itr) { return itr->getProperty(Item::Name); }) << ".\n";
     }
 }
 
@@ -324,7 +324,7 @@ std::vector<std::string> splitString(std::string string, char delimeter = ' ') {
 }
 
 template<typename Iterator, typename Function>
-std::string enumerateItems(Iterator begin, Iterator end, /*std::function<std::string(Iterator)>*/Function getString) {
+std::string enumerateItems(Iterator begin, Iterator end, Function getString) {
     std::stringstream ss;
     for (Iterator itr = begin; itr != end; ++itr) {
         if (itr != begin) {
@@ -394,35 +394,33 @@ int main() {
         } else if (command == "describe" && args.size() == 0) {
             player.getRoom()->describe();
         } else if (command == "examine" && args.size() == 1) {
-            bool found = 0;
-            for (Item item: player.getRoom()->getItems()) {
-                if (item.getProperty(Item::Name) == args[0]) {
-                    std::cout << item.getProperty(Item::Description) << '\n';
-                    found = 1;
-                    break;
-                }
-            }
-
-            if (!found) {
+            std::vector<Item> items = player.getRoom()->getItems();
+            auto foundItem = std::find_if(items.begin(), items.end(), [args](Item item) { return item.getProperty(Item::Name) == args[0]; });
+            
+            if (foundItem != items.end()) {
+                std::cout << foundItem->getProperty(Item::Description) << '\n';
+            } else {
                 std::cout << "There is no " << args[0] << " there.\n";
             }
         } else if (command == "take" && args.size() == 1) {
-            // TODO: This is kinda copypasted.
-            for (Item item: player.getRoom()->getItems()) {
-                if (item.getProperty(Item::Name) == args[0]) {
-                    player.getRoom()->removeItem(item);
-                    player.addItem(item);
-                    break;
-                }
+            std::vector<Item> items = player.getRoom()->getItems();
+            auto foundItem = std::find_if(items.begin(), items.end(), [args](Item item) { return item.getProperty(Item::Name) == args[0]; });
+            
+            if (foundItem != items.end()) {
+                player.getRoom()->removeItem(*foundItem);
+                player.addItem(*foundItem);
+            } else {
+                std::cout << "There is no " << args[0] << " there.\n";
             }
         } else if (command == "put" && args.size() == 1) {
-            // TODO: This too.
-            for (Item item: player.getItems()) {
-                if (item.getProperty(Item::Name) == args[0]) {
-                    player.removeItem(item);
-                    player.getRoom()->addItem(item);
-                    break;
-                }
+            std::vector<Item> items = player.getItems();
+            auto foundItem = std::find_if(items.begin(), items.end(), [args](Item item) { return item.getProperty(Item::Name) == args[0]; });
+            
+            if (foundItem != items.end()) {
+                player.removeItem(*foundItem);
+                player.getRoom()->addItem(*foundItem);
+            } else {
+                std::cout << "There is no " << args[0] << " in your inventory.\n";
             }
         } else {
             std::cout << "Invalid command.\n";
