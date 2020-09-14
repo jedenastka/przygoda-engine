@@ -65,8 +65,9 @@ class Item {
             Description
         };
         
-        //Item() {}
         Item(std::string);
+
+        bool operator==(Item);
 
         std::string getProperty(Property);
         std::string getId();
@@ -86,12 +87,16 @@ Item::Item(std::string id) {
     this->id = id;
 }
 
-std::string Item::getId() {
-    return id;
+bool Item::operator==(Item r) {
+    return this->getId() == r.getId();
 }
 
 std::string Item::getProperty(Property property) {
     return itemProperties[id][property];
+}
+
+std::string Item::getId() {
+    return id;
 }
 
 void Item::addItem(std::string id, std::map<Property, std::string> properties) {
@@ -105,9 +110,12 @@ class Room {
         Room() {}
         Room(std::string, std::map<Direction, Exit>, std::vector<Item>);
 
-        void describe();
         bool getExit(Direction, Exit&);
         std::vector<Item> getItems();
+
+        bool removeItem(Item);
+        void addItem(Item);
+        void describe();
     
     private:
         std::string description;
@@ -120,6 +128,33 @@ Room::Room(std::string description, std::map<Direction, Exit> exits, std::vector
     this->description = description;
     this->exits = exits;
     this->items = items;
+}
+
+bool Room::getExit(Direction direction, Exit &exit) {
+    if (exits.find(direction) != exits.end()) {
+        exit = exits[direction];
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+std::vector<Item> Room::getItems() {
+    return items;
+}
+
+bool Room::removeItem(Item item) {
+    auto foundItem = std::find(items.begin(), items.end(), item);
+    if (foundItem != items.end()) {
+        items.erase(foundItem);
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+void Room::addItem(Item item) {
+    items.push_back(item);
 }
 
 void Room::describe() {
@@ -159,19 +194,6 @@ void Room::describe() {
     }
 }
 
-bool Room::getExit(Direction direction, Exit &exit) {
-    if (exits.find(direction) != exits.end()) {
-        exit = exits[direction];
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
-std::vector<Item> Room::getItems() {
-    return items;
-}
-
 
 class Player {
 
@@ -179,11 +201,16 @@ class Player {
         Player() {}
 
         Room *getRoom();
-        void moveTo(Room*);
+        std::vector<Item> getItems();
+
+        void moveTo(Room*, bool);
         bool moveDirection(Direction);
+        bool removeItem(Item);
+        void addItem(Item);
     
     private:
         Room *room;
+        std::vector<Item> items;
     
 };
 
@@ -191,9 +218,15 @@ Room *Player::getRoom() {
     return room;
 }
 
-void Player::moveTo(Room *room) {
+std::vector<Item> Player::getItems() {
+    return items;
+}
+
+void Player::moveTo(Room *room, bool silent = 0) {
     this->room = room;
-    this->room->describe();
+    if (!silent) {
+        this->room->describe();
+    }
 }
 
 bool Player::moveDirection(Direction direction) {
@@ -204,6 +237,20 @@ bool Player::moveDirection(Direction direction) {
     } else {
         return 0;
     }
+}
+
+bool Player::removeItem(Item item) {
+    auto foundItem = std::find(items.begin(), items.end(), item);
+    if (foundItem != items.end()) {
+        items.erase(foundItem);
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+void Player::addItem(Item item) {
+    items.push_back(item);
 }
 
 
@@ -335,7 +382,25 @@ int main() {
             }
 
             if (!found) {
-                std::cout << "There is no item '" << args[0] << "'.\n";
+                std::cout << "There is no " << args[0] << " there.\n";
+            }
+        } else if (command == "take" && args.size() == 1) {
+            // TODO: This is kinda copypasted.
+            for (Item item: player.getRoom()->getItems()) {
+                if (item.getProperty(Item::Name) == args[0]) {
+                    player.getRoom()->removeItem(item);
+                    player.addItem(item);
+                    break;
+                }
+            }
+        } else if (command == "put" && args.size() == 1) {
+            // TODO: This too.
+            for (Item item: player.getItems()) {
+                if (item.getProperty(Item::Name) == args[0]) {
+                    player.removeItem(item);
+                    player.getRoom()->addItem(item);
+                    break;
+                }
             }
         } else {
             std::cout << "Invalid command.\n";
