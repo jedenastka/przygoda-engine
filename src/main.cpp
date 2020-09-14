@@ -141,17 +141,19 @@ class Item {
             Description
         };
         
-        Item(std::string);
+        Item(std::string, bool);
 
         bool operator==(Item);
 
         std::string getProperty(Property);
         std::string getId();
+        bool isHidden();
 
         static void addItem(std::string, std::map<Property, std::string>);
     
     private:
         std::string id;
+        bool hidden;
 
         static std::map<std::string, std::map<Property, std::string>> itemProperties;
     
@@ -159,8 +161,9 @@ class Item {
 
 std::map<std::string, std::map<Item::Property, std::string>> Item::itemProperties;
 
-Item::Item(std::string id) {
+Item::Item(std::string id, bool hidden) {
     this->id = id;
+    this->hidden = hidden;
 }
 
 bool Item::operator==(Item r) {
@@ -173,6 +176,10 @@ std::string Item::getProperty(Property property) {
 
 std::string Item::getId() {
     return id;
+}
+
+bool Item::isHidden() {
+    return hidden;
 }
 
 void Item::addItem(std::string id, std::map<Property, std::string> properties) {
@@ -237,11 +244,25 @@ void Room::describe() {
     std::cout << description << "\n";
 
     // TODO: Doesn't take 'hidden' property into account.
-    if (exits.size() > 0) {
+    std::vector<Exit> visibleExits;
+    for (auto exit: exits) {
+        if (!exit.second.isHidden()) {
+            visibleExits.push_back(exit.second);
+        }
+    }
+
+    if (visibleExits.size() > 0) {
         std::cout << "\nYou can go " << enumerateItems(exits.begin(), exits.end(), [](auto itr) { return itr->first.str(); }) << ".\n";
     }
 
     // TODO: There is no 'hidden' property for items (yet), but it won't take it into account anyways.
+    std::vector<Item> visibleItems;
+    for (Item item: items) {
+        if (!item.isHidden()) {
+            visibleItems.push_back(item);
+        }
+    }
+
     if (items.size() > 0) {
         std::cout << "\nYou can see " << enumerateItems(items.begin(), items.end(), [](auto itr) { return itr->getProperty(Item::Name); }) << ".\n";
     }
@@ -361,7 +382,7 @@ int main() {
 
         std::vector<Item> items;
         for (nlohmann::json item: room["items"]) {
-            items.push_back(Item(item));
+            items.push_back(Item(item, 0));
         }
 
         rooms[room["id"]] = Room(room["description"], exits, items);
