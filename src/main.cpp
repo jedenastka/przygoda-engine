@@ -243,7 +243,6 @@ void Room::addItem(Item item) {
 void Room::describe() {
     std::cout << description << "\n";
 
-    // TODO: Doesn't take 'hidden' property into account.
     std::vector<Exit> visibleExits;
     for (auto exit: exits) {
         if (!exit.second.isHidden()) {
@@ -255,7 +254,6 @@ void Room::describe() {
         std::cout << "\nYou can go " << enumerateItems(exits.begin(), exits.end(), [](auto itr) { return itr->first.str(); }) << ".\n";
     }
 
-    // TODO: There is no 'hidden' property for items (yet), but it won't take it into account anyways.
     std::vector<Item> visibleItems;
     for (Item item: items) {
         if (!item.isHidden()) {
