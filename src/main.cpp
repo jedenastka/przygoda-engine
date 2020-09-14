@@ -4,12 +4,14 @@
 #include <vector>
 #include <string>
 #include <tuple>
+#include <sstream>
 
 #include <nlohmann/json.hpp>
 
 
 
 class Room;
+template<typename Iterator, typename Function> std::string enumerateItems(Iterator, Iterator, Function);
 
 
 
@@ -236,36 +238,12 @@ void Room::describe() {
 
     // TODO: Doesn't take 'hidden' property into account.
     if (exits.size() > 0) {
-        std::cout << "\nYou can go ";
-        for (auto itr = exits.begin(); itr != exits.end(); ++itr) {
-            if (itr != exits.begin()) {
-                if (std::next(itr) == exits.end()) {
-                    std::cout << " and ";
-                } else {
-                    std::cout << ", ";
-                }
-            }
-            std::cout << itr->first.str();
-            itr->first.str();
-        }
-        std::cout << ".\n";
+        std::cout << "\nYou can go " << enumerateItems(exits.begin(), exits.end(), [](auto itr) -> std::string { return itr->first.str(); }) << ".\n";
     }
 
     // TODO: There is no 'hidden' property for items (yet), but it won't take it into account anyways.
     if (items.size() > 0) {
-        std::cout << "\nYou can see ";
-        // TODO: Copy-pasted code. Move that into a function... if possible.
-        for (auto itr = items.begin(); itr != items.end(); ++itr) {
-            if (itr != items.begin()) {
-                if (std::next(itr) == items.end()) {
-                    std::cout << " and ";
-                } else {
-                    std::cout << ", ";
-                }
-            }
-            std::cout << itr->getProperty(Item::Name);
-        }
-        std::cout << ".\n";
+        std::cout << "\nYou can see " << enumerateItems(items.begin(), items.end(), [](auto itr) -> std::string { return itr->getProperty(Item::Name); }) << ".\n";
     }
 }
 
@@ -343,6 +321,22 @@ std::vector<std::string> splitString(std::string string, char delimeter = ' ') {
     }
     ret.push_back(temp);
     return ret;
+}
+
+template<typename Iterator, typename Function>
+std::string enumerateItems(Iterator begin, Iterator end, /*std::function<std::string(Iterator)>*/Function getString) {
+    std::stringstream ss;
+    for (Iterator itr = begin; itr != end; ++itr) {
+        if (itr != begin) {
+            if (std::next(itr) == end) {
+                ss << " and ";
+            } else {
+                ss << ", ";
+            }
+        }
+        ss << getString(itr);
+    }
+    return ss.str();
 }
 
 int main() {
