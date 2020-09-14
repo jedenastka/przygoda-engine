@@ -3,6 +3,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <tuple>
 
 #include <nlohmann/json.hpp>
 
@@ -10,22 +11,95 @@
 
 class Room;
 
-enum class Direction;
-
-std::string directionToString(Direction);
 
 
+class Direction {
 
-// TODO: Should be a class. See below.
-enum class Direction {
-    None,
-    North,
-    South,
-    East,
-    West,
-    Up,
-    Down
+    public:
+        enum Value {
+            None,
+            North,
+            South,
+            East,
+            West,
+            Up,
+            Down
+        };
+        
+        Direction(Value);
+        Direction(std::string);
+
+        bool operator==(const Direction) const;
+        bool operator!=(const Direction) const;
+        bool operator<(const Direction) const;
+
+        std::string str() const;
+    
+    private:
+        Value value;
+    
 };
+
+Direction::Direction(Value value) {
+    this->value = value;
+}
+
+Direction::Direction(std::string string) {
+    if (string == "north" || string == "n") {
+        value = North;
+    } else if (string == "south" || string == "s") {
+        value = South;
+    } else if (string == "east" || string == "e") {
+        value = East;
+    } else if (string == "west" || string == "w") {
+        value = West;
+    } else if (string == "up" || string == "u") {
+        value = Up;
+    } else if (string == "down" || string == "d") {
+        value = Down;
+    } else {
+        value = None;
+    }
+}
+
+bool Direction::operator==(const Direction r) const {
+    return value == r.value;
+}
+
+bool Direction::operator!=(const Direction r) const {
+    return value != r.value;
+}
+
+bool Direction::operator<(const Direction r) const {
+    return std::tie(value) < std::tie(r.value);
+}
+
+std::string Direction::str() const {
+    switch (this->value) {
+        
+        case North:
+            return "north";
+        
+        case South:
+            return "south";
+        
+        case East:
+            return "east";
+        
+        case West:
+            return "west";
+        
+        case Up:
+            return "up";
+        
+        case Down:
+            return "down";
+        
+        default:
+            return "";
+        
+    }
+}
 
 
 class Exit {
@@ -171,7 +245,8 @@ void Room::describe() {
                     std::cout << ", ";
                 }
             }
-            std::cout << directionToString(itr->first);
+            std::cout << itr->first.str();
+            itr->first.str();
         }
         std::cout << ".\n";
     }
@@ -255,53 +330,6 @@ void Player::addItem(Item item) {
 
 
 
-// TODO: Make a Direction class and move this there.
-std::string directionToString(Direction direction) {
-    switch (direction) {
-        
-        case Direction::North:
-            return "north";
-        
-        case Direction::South:
-            return "south";
-        
-        case Direction::East:
-            return "east";
-        
-        case Direction::West:
-            return "west";
-        
-        case Direction::Up:
-            return "up";
-        
-        case Direction::Down:
-            return "down";
-        
-        default:
-            throw;
-        
-    }
-}
-
-// TODO: This too. As a static member.
-Direction stringToDirection(std::string string) {
-    if (string == "north" || string == "n") {
-        return Direction::North;
-    } else if (string == "south" || string == "s") {
-        return Direction::South;
-    } else if (string == "east" || string == "e") {
-        return Direction::East;
-    } else if (string == "west" || string == "w") {
-        return Direction::West;
-    } else if (string == "up" || string == "u") {
-        return Direction::Up;
-    } else if (string == "down" || string == "d") {
-        return Direction::Down;
-    } else {
-        return Direction::None;
-    }
-}
-
 std::vector<std::string> splitString(std::string string, char delimeter = ' ') {
     std::vector<std::string> ret;
     std::string temp;
@@ -334,7 +362,7 @@ int main() {
         std::map<Direction, Exit> exits;
         for (auto exit: room["exits"].items()) {
             // There could be a problem with 'target' being a pointer, if the room it points to isn't yet in 'exits' map.
-            exits[stringToDirection(exit.key())] = Exit(&rooms[exit.value()["target"]], exit.value()["hidden"]);
+            exits[exit.key()] = Exit(&rooms[exit.value()["target"]], exit.value()["hidden"]);
         }
 
         std::vector<Item> items;
@@ -359,10 +387,10 @@ int main() {
         args.erase(args.begin());
 
         if (command == "go" && args.size() == 1) {
-            Direction direction = stringToDirection(args[0]);
+            Direction direction = args[0];
             if (direction != Direction::None) {
                 if (!player.moveDirection(direction)) {
-                    std::cout << "Can't go " << directionToString(direction) << ".\n";
+                    std::cout << "Can't go " << direction.str() << ".\n";
                 }
             } else {
                 std::cout << "There is no direction '" << args[0] << "'.\n";
